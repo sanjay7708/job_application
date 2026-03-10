@@ -11,7 +11,7 @@ from .serializers import SignupSerializer
 
 class SignUpView(APIView):
     def post(self,request):
-        serliazer=SignupSerializer(request.data)
+        serliazer=SignupSerializer(data=request.data)
         if serliazer.is_valid():
             serliazer.save()
             return Response({'message':'User Register Successfully'},status=status.HTTP_201_CREATED)
