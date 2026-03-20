@@ -1,4 +1,4 @@
-name: Django CI
+name: Full stack CI&CD Pipeline
 on:
   push:
     branches: [ "main" ]
@@ -6,7 +6,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  backend:
+  CI:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,3 +29,50 @@ jobs:
       run: |
         coverage run manage.py test accounts.test.auth_test
         coverage report
+
+    # docker login
+
+    - name: Docker login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrects.DOCKER_USERNAME }}
+        password: ${{ secrects.DOCKER_PASSWORD }}
+
+    # build and push backend
+
+    - name: Build and push backend Image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        push: true
+        tags: ${{ secrects.DOCKER_USERNAME }}/django-backend-latest
+
+    # build and push frontend
+    - name: Build and push frontend Image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ secrects.DOCKER_USERNAME }}/react-frontend-latest
+  
+  deploye:
+    needs: CI
+    runs-on: ubuntu-latest
+    if: github.ref=='refs/head/main'
+
+    steps:
+      - name: Deploye EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrects.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/django-backend:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest
+
+            docker compose down
+            docker compose up -d
+
+    
+  

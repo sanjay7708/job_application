@@ -132,8 +132,9 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:5173',
+    'http://localhost:5173'
 ]
-CORS_ALLOW_CREDENTIALS=True
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
