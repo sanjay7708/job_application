@@ -45,7 +45,7 @@ jobs:
       with:
         context: ./backend
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/django-backend-latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/django-backend:latest
 
     # build and push frontend
     - name: Build and push frontend Image
@@ -53,12 +53,12 @@ jobs:
       with:
         context: ./frontend
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/react-frontend-latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/react-frontend:latest
   
   deploye:
     needs: CI
     runs-on: ubuntu-latest
-    if: github.ref=='push' && 'refs/head/main'
+    if: github.ref.event_name=='push' && 'refs/heads/main'
 
     steps:
       - name: Deploye EC2
