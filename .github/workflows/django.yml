@@ -58,7 +58,7 @@ jobs:
   deploye:
     needs: CI
     runs-on: ubuntu-latest
-    if: github.ref.event_name=='push' && 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Deploye EC2
