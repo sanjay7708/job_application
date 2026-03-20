@@ -1,4 +1,4 @@
-FROM node:lts-alphine
+FROM node:20-alpine AS build 
 
 
 WORKDIR /frontend
@@ -9,6 +9,14 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 5173
+RUN npm run build
 
-CMD ["npm","run","dev"]
+# production stage
+
+FROM nginx:alpine
+
+COPY --from=build /frontend/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
